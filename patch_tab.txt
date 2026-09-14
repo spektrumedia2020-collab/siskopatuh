@@ -1,0 +1,6 @@
+  const activeTab = location.pathname.includes('/kepatuhan') ? 'kepatuhan' 
+                  : location.pathname.includes('/ews') ? 'ews' 
+                  : location.pathname.includes('/aduan') ? 'aduan' 
+                  : location.pathname.includes('/registrasi') ? 'registrasi'
+                  : location.pathname.includes('/tema') ? 'tema'
+                  : 'kuota';

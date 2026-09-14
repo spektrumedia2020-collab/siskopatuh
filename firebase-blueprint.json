@@ -1,0 +1,59 @@
+{
+  "__instructions": "Siskohaj Jemaah Portal Blueprint",
+  "users": {
+    "__doc": "User profiles (Jemaah, Admin, Penyelenggara)",
+    "uid": {
+      "nik": "string (16 digits)",
+      "name": "string",
+      "porsiNumber": "string",
+      "virtualAccount": "string",
+      "estimatedYear": "number",
+      "role": "string ('jemaah' | 'penyelenggara' | 'admin')",
+      "createdAt": "timestamp"
+    }
+  },
+  "savings": {
+    "__doc": "Buku Tabungan Digital",
+    "uid": {
+      "totalBalance": "number",
+      "transactions": [
+        {
+          "date": "timestamp",
+          "description": "string",
+          "type": "string ('deposit' | 'yield')",
+          "amount": "number",
+          "balanceAfter": "number"
+        }
+      ]
+    }
+  },
+  "documents": {
+    "__doc": "E-Vault Brankas Dokumen",
+    "uid": {
+      "passport": {
+        "status": "string ('missing' | 'verifying' | 'validated')",
+        "url": "string",
+        "updatedAt": "timestamp"
+      },
+      "vaccine": {
+        "status": "string ('missing' | 'verifying' | 'validated')",
+        "url": "string",
+        "updatedAt": "timestamp"
+      }
+    }
+  },
+  "timelines": {
+    "__doc": "Timeline Keberangkatan",
+    "uid": {
+      "stages": [
+        {
+          "title": "string",
+          "description": "string",
+          "date": "timestamp",
+          "status": "string ('completed' | 'current' | 'pending')",
+          "order": "number"
+        }
+      ]
+    }
+  }
+}

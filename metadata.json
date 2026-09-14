@@ -1,0 +1,6 @@
+{
+  "name": "SISKOPATUH Ver. 2.0",
+  "description": "Sistem informasi dan pusat kendali operasional Haji & Umroh terpadu Kementerian Agama.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
