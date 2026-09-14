@@ -102,7 +102,7 @@ export function MainLayout() {
         )}
       </header>
 
-      <main className="min-w-0 flex-1 container mx-auto max-w-7xl bg-slate-950 px-3 py-4 sm:px-4 sm:py-6">
+      <main className={`min-w-0 flex-1 container mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 ${location.pathname === '/login' ? 'bg-gradient-to-br from-slate-900 via-emerald-950/30 to-sky-950/30' : 'bg-slate-950'}`}>
         <Outlet />
       </main>
       

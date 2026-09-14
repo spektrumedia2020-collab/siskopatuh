@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ScanFace, Fingerprint, KeyRound, Building, UserSquare2, ShieldCheck } from "lucide-react";
+import { ScanFace, Fingerprint, KeyRound, Building, UserSquare2, ShieldCheck, PlaneTakeoff, Globe2, LockKeyhole, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -312,8 +312,31 @@ export function Login() {
   };
 
   return (
-    <div className="container mx-auto max-w-lg px-4 flex items-center justify-center min-h-[calc(100vh-140px)]">
-      <Card className="w-full shadow-2xl border-slate-800 bg-slate-900/80 backdrop-blur">
+    <div className="container mx-auto flex min-h-[calc(100vh-140px)] max-w-6xl items-center justify-center px-4 py-8 sm:px-6 lg:py-12">
+      <div className="grid w-full items-stretch gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(480px,1.15fr)] lg:gap-8">
+        <section className="relative flex min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-950 via-slate-900 to-sky-950 p-6 shadow-2xl sm:min-h-[230px] lg:min-h-[650px] lg:p-8">
+          <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full border border-emerald-300/20 bg-emerald-400/10" />
+          <div className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full border border-sky-300/20 bg-sky-400/10" />
+          <div className="relative z-10 flex items-center gap-3">
+            <img src="/logo.webp" alt="Logo Siskopatuh" className="h-14 w-14 rounded-2xl object-contain drop-shadow-xl sm:h-16 sm:w-16" />
+            <div>
+              <p className="text-lg font-black tracking-tight text-white">Siskopatuh v.2</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-200/80">Akses terpadu nasional</p>
+            </div>
+          </div>
+          <div className="relative z-10 mt-8 max-w-md lg:mt-auto">
+            <div className="mb-4 hidden items-center gap-3 lg:flex">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-emerald-300/20 bg-white/10 text-emerald-200"><Globe2 className="h-6 w-6" /></div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-300/20 bg-white/10 text-sky-200"><PlaneTakeoff className="h-6 w-6" /></div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-300/20 bg-white/10 text-amber-200"><LockKeyhole className="h-6 w-6" /></div>
+            </div>
+            <h2 className="text-xl font-black leading-tight text-white sm:text-2xl lg:text-4xl">Satu gerbang untuk layanan umrah dan haji khusus.</h2>
+            <p className="mt-3 max-w-sm text-xs leading-5 text-slate-300 sm:text-sm">Masuk ke portal sesuai peran Anda untuk mengelola, memantau, dan mengakses layanan Siskopatuh.</p>
+            <div className="mt-5 hidden items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-emerald-200/80 lg:flex"><Sparkles className="h-3.5 w-3.5" /> Sistem terintegrasi dan terpusat</div>
+          </div>
+        </section>
+
+        <Card className="w-full border-white/15 bg-slate-900/65 shadow-xl shadow-slate-950/20 backdrop-blur-md">
         <CardHeader className="text-center space-y-2 pb-8">
           <div className="mx-auto w-12 h-12 bg-emerald-900/30 rounded-full flex items-center justify-center mb-4 border border-emerald-500/20 shadow-inner">
             <ShieldCheck className="h-6 w-6 text-emerald-400" />
@@ -600,7 +623,8 @@ export function Login() {
 
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }
