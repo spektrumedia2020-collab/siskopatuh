@@ -311,6 +311,13 @@ export function Login() {
     navigate(path);
   };
 
+  const useAdminDemoAccount = () => {
+    setLoginMethod("admin");
+    setAdminNip("12345");
+    setAdminToken("111");
+    setError("");
+  };
+
   return (
     <div className="container mx-auto flex min-h-[calc(100vh-140px)] max-w-6xl items-center justify-center px-4 py-8 sm:px-6 lg:py-12">
       <div className="grid w-full items-stretch gap-6 lg:grid-cols-[minmax(280px,0.85fr)_minmax(480px,1.15fr)] lg:gap-8">
@@ -622,6 +629,32 @@ export function Login() {
             </form>
 
           )}
+
+          <div className="mt-6 rounded-xl border border-sky-300/20 bg-sky-950/30 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-300">Akun Test / Demo</p>
+                <p className="mt-1 text-xs leading-5 text-slate-300">Gunakan akun ini untuk mencoba area Kemenhaj tanpa data produksi.</p>
+              </div>
+              <button type="button" onClick={useAdminDemoAccount} className="shrink-0 rounded-lg border border-sky-300/30 px-3 py-2 text-[10px] font-bold text-sky-200 transition-colors hover:bg-sky-400/15 hover:text-white">
+                Isi Otomatis
+              </button>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-lg border border-white/10 bg-slate-950/40 p-2">
+                <span className="block text-[10px] text-slate-500">Role</span>
+                <span className="font-bold text-white">Kemenhaj</span>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-slate-950/40 p-2">
+                <span className="block text-[10px] text-slate-500">NIP Demo</span>
+                <span className="font-mono font-bold text-white">12345</span>
+              </div>
+              <div className="col-span-2 rounded-lg border border-white/10 bg-slate-950/40 p-2">
+                <span className="block text-[10px] text-slate-500">Token 2FA Demo</span>
+                <span className="font-mono font-bold text-white">111</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
         </Card>
       </div>
