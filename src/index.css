@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 select {
 	color-scheme: dark;
 }
@@ -12,7 +14,10 @@ select option:hover {
 	background-color: #065f46;
 	color: #ffffff;
 }
-@import "tailwindcss";
+
+.theme-color-grid {
+	grid-template-columns: minmax(0, 1fr) !important;
+}
 
 .public-landing .theme-card,
 .public-landing .theme-action-box {

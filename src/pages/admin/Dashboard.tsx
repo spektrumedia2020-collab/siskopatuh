@@ -1119,14 +1119,14 @@ export function AdminDashboard() {
         <div className="flex flex-col gap-6 flex-grow animate-in fade-in h-full">
           <Card className="bg-[#0b1120] border-slate-800/60 shadow-xl overflow-hidden mt-2">
             <CardHeader className="border-b border-slate-800/50 pb-4">
-               <div className="flex justify-between items-center w-full">
+               <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                  <CardTitle className="text-emerald-400 text-xs uppercase tracking-widest font-bold flex items-center gap-2">
                    <ShieldCheck className="w-4 h-4" /> KEPATUHAN PENYELENGGARA
                  </CardTitle>
                  
-                 <div className="flex gap-3 items-center">
+                 <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:items-center sm:gap-3">
                    <select
-                     className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-colors w-40"
+                     className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-colors focus:border-emerald-500/50 focus:outline-none sm:w-40"
                      value={filterWilayah}
                      onChange={(e) => setFilterWilayah(e.target.value)}
                    >
@@ -1136,7 +1136,7 @@ export function AdminDashboard() {
                      ))}
                    </select>
                    <select
-                     className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-colors w-40"
+                     className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-colors focus:border-emerald-500/50 focus:outline-none sm:w-40"
                      value={filterPelanggaran}
                      onChange={(e) => setFilterPelanggaran(e.target.value)}
                    >
@@ -1149,7 +1149,25 @@ export function AdminDashboard() {
                </div>
             </CardHeader>
             <CardContent className="p-0">
-               <div className="overflow-x-auto">
+               <div className="grid gap-3 p-3 md:hidden">
+                 {filteredDirektoriList.map((item, idx) => (
+                   <div key={item.id || idx} className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                     <div className="flex items-start justify-between gap-3">
+                       <div className="min-w-0">
+                         <p className="truncate font-bold text-slate-100">{item.name}</p>
+                         <p className="mt-1 text-xs text-slate-400">{item.type || 'PPIU'} · {item.wilayahOperasional || 'Wilayah belum diisi'}</p>
+                       </div>
+                       <span className="shrink-0 rounded border border-amber-900/40 bg-amber-950/30 px-2 py-1 text-[10px] font-bold text-amber-400">Dalam Pengawasan</span>
+                     </div>
+                     <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+                       <div><p className="text-slate-500">Pelanggaran</p><p className="mt-1 font-bold text-slate-200">{item.tingkatPelanggaran || 'Belum dinilai'}</p></div>
+                       <div><p className="text-slate-500">Skor Audit</p><p className="mt-1 font-bold text-slate-200">{item.skorAudit ?? '-'} / 100</p></div>
+                     </div>
+                     <Button variant="outline" size="sm" className="mt-4 w-full border-slate-700 text-slate-200 hover:bg-emerald-950/40 hover:text-white" onClick={() => setSelectedKepatuhan(item)}>Lihat Detail</Button>
+                   </div>
+                 ))}
+               </div>
+               <div className="hidden overflow-x-auto md:block">
                  <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-slate-800/50 text-[10px] uppercase tracking-wider text-slate-500 bg-slate-900/30">
@@ -1358,14 +1376,14 @@ export function AdminDashboard() {
         <div className="flex flex-col gap-6 flex-grow animate-in fade-in">
           <Card className="bg-[#0b1120] border-slate-800/60 shadow-xl overflow-hidden mt-2">
             <CardHeader className="border-b border-slate-800/50 pb-4">
-               <div className="flex justify-between items-center w-full">
+               <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                  <CardTitle className="text-emerald-400 text-xs uppercase tracking-widest font-bold flex items-center gap-2">
                    <ActivitySquare className="w-4 h-4" /> RADAR KESIAPAN OPERASIONAL
                  </CardTitle>
                  
-                 <div className="flex gap-4 items-center">
+                 <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
                    <select
-                     className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-colors"
+                     className="w-full rounded-lg border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-slate-300 transition-colors focus:border-emerald-500/50 focus:outline-none sm:w-auto"
                      value={filterOperasionalPenyelenggara}
                      onChange={(e) => setFilterOperasionalPenyelenggara(e.target.value)}
                    >
@@ -1374,14 +1392,35 @@ export function AdminDashboard() {
                        <option key={p} value={p}>{p}</option>
                      ))}
                    </select>
-                   <div className="px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm text-slate-400">
+                   <div className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-400">
                      {filteredOperasional.length} Paket Layanan Dipantau
                    </div>
                  </div>
                </div>
             </CardHeader>
             <CardContent className="p-0">
-               <div className="overflow-x-auto">
+               <div className="grid gap-3 p-3 md:hidden">
+                 {filteredOperasional.map((pkg, idx) => {
+                   const isReady = pkg.statusVisa?.includes('Terbit') && pkg.statusTiket?.includes('Issued') && pkg.statusHotel?.includes('Lunas');
+                   return (
+                     <div key={pkg.id || idx} className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
+                       <div className="flex items-start justify-between gap-3">
+                         <div className="min-w-0">
+                           <p className="font-bold text-slate-100">{pkg.name}</p>
+                           <p className="mt-1 truncate text-xs uppercase tracking-wide text-slate-500">{pkg.pihkName}</p>
+                         </div>
+                         <span className={`h-3 w-3 shrink-0 rounded-full ${isReady ? 'bg-emerald-500' : 'bg-amber-500'} shadow-[0_0_8px_currentColor]`} aria-label={isReady ? 'Siap' : 'Perlu perhatian'} />
+                       </div>
+                       <div className="mt-4 grid gap-2 text-xs">
+                         <div className="flex items-center justify-between gap-3"><span className="text-slate-500">Visa</span><span className="text-right text-slate-200">{pkg.statusVisa || 'Belum Diajukan'}</span></div>
+                         <div className="flex items-center justify-between gap-3"><span className="text-slate-500">Tiket</span><span className="text-right text-slate-200">{pkg.statusTiket || 'Belum Issued'}</span></div>
+                         <div className="flex items-center justify-between gap-3"><span className="text-slate-500">Hotel</span><span className="text-right text-slate-200">{pkg.statusHotel || 'Belum Booking'}</span></div>
+                       </div>
+                     </div>
+                   );
+                 })}
+               </div>
+               <div className="hidden overflow-x-auto md:block">
                   <table className="w-full text-left text-sm">
                     <thead className="bg-[#0f172a] border-b border-slate-800">
                       <tr>

@@ -71,12 +71,12 @@ export function TemaSettings() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="theme-color-grid flex flex-col gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Latar Belakang (Base BG)</label>
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded border border-slate-700 overflow-hidden flex-shrink-0" style={{ backgroundColor: localColors.bg }}>
-                        <input type="color" className="absolute inset-[-10px] w-[50px] h-[50px] opacity-0 cursor-pointer" value={localColors.bg} onChange={(e) => setLocalColors({...localColors, bg: e.target.value})} />
+                        <input type="color" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" value={localColors.bg} onChange={(e) => setLocalColors({...localColors, bg: e.target.value})} />
                       </div>
                       <input type="text" className="flex-1 h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 text-sm focus:outline-none focus:border-emerald-500 text-white font-mono" value={localColors.bg} onChange={(e) => setLocalColors({...localColors, bg: e.target.value})} />
                     </div>
@@ -85,7 +85,7 @@ export function TemaSettings() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Warna Primer (Aksen)</label>
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded border border-slate-700 overflow-hidden flex-shrink-0" style={{ backgroundColor: localColors.primary }}>
-                        <input type="color" className="absolute inset-[-10px] w-[50px] h-[50px] opacity-0 cursor-pointer" value={localColors.primary} onChange={(e) => setLocalColors({...localColors, primary: e.target.value})} />
+                        <input type="color" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" value={localColors.primary} onChange={(e) => setLocalColors({...localColors, primary: e.target.value})} />
                       </div>
                       <input type="text" className="flex-1 h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 text-sm focus:outline-none focus:border-emerald-500 text-white font-mono" value={localColors.primary} onChange={(e) => setLocalColors({...localColors, primary: e.target.value})} />
                     </div>
@@ -94,7 +94,7 @@ export function TemaSettings() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Latar Kotak (Card BG)</label>
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded border border-slate-700 overflow-hidden flex-shrink-0" style={{ backgroundColor: localColors.card }}>
-                        <input type="color" className="absolute inset-[-10px] w-[50px] h-[50px] opacity-0 cursor-pointer" value={localColors.card} onChange={(e) => setLocalColors({...localColors, card: e.target.value})} />
+                        <input type="color" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" value={localColors.card} onChange={(e) => setLocalColors({...localColors, card: e.target.value})} />
                       </div>
                       <input type="text" className="flex-1 h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 text-sm focus:outline-none focus:border-emerald-500 text-white font-mono" value={localColors.card} onChange={(e) => setLocalColors({...localColors, card: e.target.value})} />
                     </div>
@@ -103,7 +103,7 @@ export function TemaSettings() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Teks Judul (Title)</label>
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded border border-slate-700 overflow-hidden flex-shrink-0" style={{ backgroundColor: localColors.textTitle }}>
-                        <input type="color" className="absolute inset-[-10px] w-[50px] h-[50px] opacity-0 cursor-pointer" value={localColors.textTitle} onChange={(e) => setLocalColors({...localColors, textTitle: e.target.value})} />
+                        <input type="color" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" value={localColors.textTitle} onChange={(e) => setLocalColors({...localColors, textTitle: e.target.value})} />
                       </div>
                       <input type="text" className="flex-1 h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 text-sm focus:outline-none focus:border-emerald-500 text-white font-mono" value={localColors.textTitle} onChange={(e) => setLocalColors({...localColors, textTitle: e.target.value})} />
                     </div>
@@ -112,7 +112,7 @@ export function TemaSettings() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Teks Paragraf (Body)</label>
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded border border-slate-700 overflow-hidden flex-shrink-0" style={{ backgroundColor: localColors.textBody }}>
-                        <input type="color" className="absolute inset-[-10px] w-[50px] h-[50px] opacity-0 cursor-pointer" value={localColors.textBody} onChange={(e) => setLocalColors({...localColors, textBody: e.target.value})} />
+                        <input type="color" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" value={localColors.textBody} onChange={(e) => setLocalColors({...localColors, textBody: e.target.value})} />
                       </div>
                       <input type="text" className="flex-1 h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 text-sm focus:outline-none focus:border-emerald-500 text-white font-mono" value={localColors.textBody} onChange={(e) => setLocalColors({...localColors, textBody: e.target.value})} />
                     </div>
@@ -121,7 +121,7 @@ export function TemaSettings() {
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Warna Tombol Utama</label>
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded border border-slate-700 overflow-hidden flex-shrink-0" style={{ backgroundColor: localColors.buttonBg || localColors.primary }}>
-                        <input type="color" className="absolute inset-[-10px] w-[50px] h-[50px] opacity-0 cursor-pointer" value={localColors.buttonBg || localColors.primary} onChange={(e) => setLocalColors({...localColors, buttonBg: e.target.value, textButton: getContrastYIQ(e.target.value)})} />
+                        <input type="color" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" value={localColors.buttonBg || localColors.primary} onChange={(e) => setLocalColors({...localColors, buttonBg: e.target.value, textButton: getContrastYIQ(e.target.value)})} />
                       </div>
                       <input type="text" className="flex-1 h-9 rounded-lg border border-slate-700 bg-slate-900 px-3 text-sm focus:outline-none focus:border-emerald-500 text-white font-mono" value={localColors.buttonBg || localColors.primary} onChange={(e) => setLocalColors({...localColors, buttonBg: e.target.value, textButton: getContrastYIQ(e.target.value)})} />
                     </div>
@@ -149,7 +149,7 @@ export function TemaSettings() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 space-y-4">
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                   <label className="flex items-center gap-2 text-xs font-bold text-emerald-400 cursor-pointer">
                     <input type="radio" name="scope" className="accent-emerald-500 w-4 h-4" defaultChecked />
                     Semua Halaman (Global)
