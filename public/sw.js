@@ -1,4 +1,4 @@
-const CACHE_NAME = 'siskopatuh-shell-v1';
+const CACHE_NAME = 'siskopatuh-shell-v2';
 const APP_SHELL = ['/manifest.webmanifest', '/logo.webp'];
 
 self.addEventListener('install', (event) => {
