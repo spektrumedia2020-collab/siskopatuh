@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export function Login() {
+  const demoAccounts = {
+    jemaah: { nik: "9999999999999999", password: "demo123" },
+    penyelenggara: { nib: "PIHK-DEMO", password: "demo123" },
+    admin: { nip: "12345", token: "111" }
+  };
   const navigate = useNavigate();
   const location = useLocation();
   const [direktoriList, setDirektoriList] = useState<any[]>([]);
@@ -99,6 +104,11 @@ export function Login() {
     setError("");
     
     try {
+      if (nik === demoAccounts.jemaah.nik && password === demoAccounts.jemaah.password && isLoginMode) {
+        localStorage.setItem("jemaah_auth_uid", "demo-jemaah-001");
+        navigate("/jemaah");
+        return;
+      }
       const { db } = await import('@/lib/firebase');
       const { doc, setDoc, getDoc } = await import('firebase/firestore');
       
@@ -188,6 +198,11 @@ export function Login() {
     setError("");
     
     try {
+      if (isPenyelenggaraLoginMode && penyelenggaraNib === demoAccounts.penyelenggara.nib && penyelenggaraPassword === demoAccounts.penyelenggara.password) {
+        localStorage.setItem("penyelenggara_auth_uid", "demo-penyelenggara-001");
+        navigate("/penyelenggara");
+        return;
+      }
       const { db } = await import('@/lib/firebase');
       const { collection, query, where, getDocs, addDoc } = await import('firebase/firestore');
       
@@ -315,6 +330,22 @@ export function Login() {
     setLoginMethod("admin");
     setAdminNip("12345");
     setAdminToken("111");
+    setError("");
+  };
+
+  const useJemaahDemoAccount = () => {
+    setLoginMethod("jemaah");
+    setIsLoginMode(true);
+    setNik(demoAccounts.jemaah.nik);
+    setPassword(demoAccounts.jemaah.password);
+    setError("");
+  };
+
+  const usePenyelenggaraDemoAccount = () => {
+    setLoginMethod("penyelenggara");
+    setIsPenyelenggaraLoginMode(true);
+    setPenyelenggaraNib(demoAccounts.penyelenggara.nib);
+    setPenyelenggaraPassword(demoAccounts.penyelenggara.password);
     setError("");
   };
 
@@ -636,9 +667,7 @@ export function Login() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-300">Akun Test / Demo</p>
                 <p className="mt-1 text-xs leading-5 text-slate-300">Gunakan akun ini untuk mencoba area Kemenhaj tanpa data produksi.</p>
               </div>
-              <button type="button" onClick={useAdminDemoAccount} className="shrink-0 rounded-lg border border-sky-300/30 px-3 py-2 text-[10px] font-bold text-sky-200 transition-colors hover:bg-sky-400/15 hover:text-white">
-                Isi Otomatis
-              </button>
+              <span className="shrink-0 text-[10px] font-bold text-sky-300">Demo aktif</span>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-lg border border-white/10 bg-slate-950/40 p-2">
@@ -653,6 +682,11 @@ export function Login() {
                 <span className="block text-[10px] text-slate-500">Token 2FA Demo</span>
                 <span className="font-mono font-bold text-white">111</span>
               </div>
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              <button type="button" onClick={useJemaahDemoAccount} className="rounded-lg border border-emerald-300/20 bg-emerald-950/30 px-3 py-2 text-left text-[10px] font-bold text-emerald-200 hover:bg-emerald-900/40">Jemaah<br /><span className="font-normal text-emerald-100/70">9999999999999999 / demo123</span></button>
+              <button type="button" onClick={usePenyelenggaraDemoAccount} className="rounded-lg border border-amber-300/20 bg-amber-950/30 px-3 py-2 text-left text-[10px] font-bold text-amber-200 hover:bg-amber-900/40">PIHK/PPIU<br /><span className="font-normal text-amber-100/70">PIHK-DEMO / demo123</span></button>
+              <button type="button" onClick={useAdminDemoAccount} className="rounded-lg border border-sky-300/20 bg-sky-950/30 px-3 py-2 text-left text-[10px] font-bold text-sky-200 hover:bg-sky-900/40">Kemenhaj<br /><span className="font-normal text-sky-100/70">12345 / 111</span></button>
             </div>
           </div>
         </CardContent>

@@ -192,6 +192,14 @@ useEffect(() => {
     const uid = localStorage.getItem("jemaah_auth_uid");
     
     if (uid) {
+      if (uid === "demo-jemaah-001") {
+        setUserData({ name: "Jemaah Demo", nik: "9999999999999999", jenis: "Umrah", penyelenggara: "PT Demo Travel", paket: "Umrah Reguler", role: "jemaah", status: "Aktif" });
+        setSavingsData({ totalBalance: 25000000, transactions: [] });
+        setDocumentsData({ passport: { status: "missing" }, vaccine: { status: "missing" } });
+        setTimelineData({ stages: [] });
+        setLoading(false);
+        return;
+      }
       // Listen to User Profile
       // Listen to Real-time Package
       let unsubPackage = () => {};
