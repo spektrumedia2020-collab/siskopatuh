@@ -249,16 +249,20 @@ useEffect(() => {
   const verifiedDocs = 2 + (docs.passport?.status === 'validated' ? 1 : 0) + (docs.vaccine?.status === 'validated' ? 1 : 0);
 
   return (
-    <div className="min-w-0 space-y-4 sm:space-y-6 max-w-6xl mx-auto">
+    <div className="min-w-0 w-full space-y-4 sm:space-y-6 max-w-6xl mx-auto">
       {/* Floating SOS Button */}
-      <div className="fixed bottom-4 right-4 z-50 animate-bounce sm:bottom-8 sm:right-8">
+       <div className="fixed bottom-4 right-4 z-50 sm:bottom-8 sm:right-8">
         <Button 
+         type="button"
+         title="Kirim sinyal darurat"
+         aria-label="Kirim sinyal darurat"
            onClick={handleSOS}
            disabled={sosStatus === 'sending'}
-           className={`rounded-full h-12 px-4 text-sm font-bold shadow-2xl flex items-center gap-2 sm:h-16 sm:px-6 sm:text-lg sm:gap-3 ${sosStatus === 'sent' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-red-600 hover:bg-red-700'} text-white border-4 border-red-900/50`}
+           className={`min-h-12 h-12 w-12 rounded-full p-0 text-sm font-bold shadow-[0_8px_24px_rgba(220,38,38,0.45)] flex items-center justify-center gap-2 sm:h-14 sm:w-auto sm:max-w-[calc(100vw-2rem)] sm:px-6 sm:text-lg sm:gap-3 ${sosStatus === 'sent' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-red-600 hover:bg-red-700'} text-white border-2 border-red-900/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300`}
         >
-          <TriangleAlert className="w-6 h-6" />
-          {sosStatus === 'sending' ? 'Mengirim...' : sosStatus === 'sent' ? 'SOS Terkirim' : 'DARURAT (SOS)'}
+          <span aria-hidden="true" className="text-2xl leading-none">🆘</span>
+          <TriangleAlert className="hidden h-6 w-6 sm:block" />
+          <span className="hidden sm:inline">{sosStatus === 'sending' ? 'Mengirim...' : sosStatus === 'sent' ? 'SOS Terkirim' : 'DARURAT (SOS)'}</span>
         </Button>
       </div>
 
@@ -359,7 +363,7 @@ useEffect(() => {
               </CardContent>
             </Card>
           </div>
-          <Card>
+          <Card className="min-w-0 overflow-hidden">
             <CardHeader className="border-b border-slate-800 pb-4 mb-4">
               <CardTitle className="text-xl">Pelacakan Status Keberangkatan</CardTitle>
               <CardDescription>Pantau progress dokumen dan verifikasi dari BPKH hingga penerbitan tiket dan visa Anda.</CardDescription>
@@ -626,7 +630,7 @@ useEffect(() => {
               <Button 
                 size="sm" 
                 variant="outline" 
-                className="h-8 gap-2 /30  /10 hover:/20"
+                className="h-9 gap-2 border-emerald-400/30 text-emerald-300 hover:bg-emerald-400/10"
                 onClick={() => setShowUploadModal(true)}
               >
                 <UploadCloud className="h-4 w-4" /> Unggah Struk
@@ -672,8 +676,8 @@ useEffect(() => {
               </ResponsiveContainer>
             </div>
             
-            <div className="mt-8 border border-slate-800 rounded-lg overflow-hidden">
-              <table className="w-full text-sm text-left">
+            <div className="mt-8 overflow-x-auto rounded-lg border border-slate-800">
+              <table className="w-full min-w-[680px] text-sm text-left">
                 <thead className="bg-slate-900/50 text-slate-400 font-medium border-b border-slate-800">
                   <tr>
                     <th className="px-4 py-3">Tanggal Mutasi</th>

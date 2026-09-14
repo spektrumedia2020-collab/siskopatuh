@@ -4,3 +4,22 @@
 .public-landing .theme-action-box {
 	background-color: rgba(15, 23, 42, 0.86) !important;
 }
+
+.dashboard-shell {
+	background-color: #020617 !important;
+}
+
+.sidebar-gradient {
+	background:
+		linear-gradient(155deg, rgba(6, 78, 59, 0.98) 0%, rgba(2, 44, 54, 0.98) 46%, rgba(8, 47, 73, 0.98) 100%);
+	box-shadow: 12px 0 40px rgba(2, 44, 54, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
+}

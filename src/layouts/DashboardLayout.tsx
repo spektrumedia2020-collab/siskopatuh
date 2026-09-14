@@ -154,31 +154,40 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
     'Admin Command Center';
 
   return (
-    <div className="flex min-h-screen min-w-0 theme-container font-sans">
+    <div className="dashboard-shell flex min-h-screen min-w-0 theme-container font-sans">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[86vw] theme-card border-r border-white/10 flex flex-col transition-transform duration-200 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-16 flex items-center px-6 border-b border-white/10">
-          <Link to="/" className="font-bold text-lg tracking-tight theme-title flex items-center gap-2">
+      <aside className={`sidebar-gradient fixed inset-y-0 left-0 z-50 w-72 max-w-[86vw] border-r border-emerald-300/15 flex flex-col transition-transform duration-200 lg:static lg:z-auto lg:w-72 lg:max-w-none lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex min-h-16 items-center justify-between gap-3 border-b border-white/10 px-4 sm:px-5">
+          <Link to="/" className="min-w-0 font-bold text-lg tracking-tight theme-title flex items-center gap-2">
             {logoUrl ? (
               <img src={logoUrl} alt="Logo" className="max-h-8 max-w-[80px] object-contain drop-shadow-md" />
             ) : (
               <div className="w-8 h-8 theme-primary-bg rounded-lg flex items-center justify-center font-bold theme-title shadow-lg">K</div>
             )}
             <div className="flex flex-col justify-center leading-tight">
-              <span>SISKOPATUH V.2</span>
-              <span className="text-[9px] font-normal opacity-80 mt-0.5 tracking-normal">Sistem Komputerisasi Pengelolaan Terpadu Umrah dan Haji Khusus</span>
+              <span className="truncate">SISKOPATUH V.2</span>
+              <span className="hidden text-[9px] font-normal opacity-80 mt-0.5 tracking-normal sm:block">Sistem Komputerisasi Pengelolaan Terpadu Umrah dan Haji Khusus</span>
             </div>
           </Link>
+          <button type="button" aria-label="Tutup navigasi" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 theme-title lg:hidden" onClick={() => setMobileMenuOpen(false)}>
+            <X className="h-5 w-5" />
+          </button>
         </div>
         
-        <div className="p-6">
-          <div className="text-[10px] font-bold theme-primary-text uppercase tracking-[0.2em] mb-2">
+        <div className="overflow-y-auto p-4 sm:p-5">
+          <div className="mb-3 text-[10px] font-bold theme-primary-text uppercase tracking-[0.2em]">
             {roleTitle}
           </div>
-          <div className="font-medium theme-title mb-6 truncate text-sm" title={userName || "Memuat..."}>
-            {userName || "Memuat..."}
+          <div className="mb-5 flex items-center gap-3 rounded-xl border border-emerald-300/15 bg-slate-950/35 px-3 py-3" title={userName || "Memuat..."}>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-sky-500 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-950/30">
+              {userName ? userName.charAt(0).toUpperCase() : '?'}
+            </div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold theme-title">{userName || "Memuat..."}</div>
+              <div className="mt-0.5 text-[10px] theme-body opacity-60">Akun aktif</div>
+            </div>
           </div>
-          
+          <div className="mb-3 px-1 text-[10px] font-bold uppercase tracking-[0.16em] theme-body opacity-50">Navigasi utama</div>
           <nav className="space-y-2">
             {sidebarItems.map((item) => {
               const isActive = location.pathname === item.href;
@@ -186,10 +195,11 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
                 <Link
                   key={item.href}
                   to={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors border ${
-                    isActive 
-                      ? "" 
-                      : "bg-black/10 theme-body border-transparent hover:bg-black/30 hover:theme-title"
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
+                    isActive
+                      ? "bg-gradient-to-r from-emerald-500 to-sky-500 border-emerald-300/40 text-slate-950 shadow-lg shadow-emerald-950/25 ring-1 ring-emerald-300/30"
+                      : "bg-slate-950/20 theme-body border-transparent hover:bg-emerald-400/10 hover:border-emerald-300/15 hover:theme-title"
                   }`}
                 >
                   <item.icon className="h-4 w-4" />
@@ -213,7 +223,7 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
       {mobileMenuOpen && (
         <button
           type="button"
-          aria-label="Tutup navigasi"
+          aria-label="Tutup menu latar"
           className="fixed inset-0 z-40 bg-black/60 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
@@ -248,18 +258,21 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
              <div className="hidden bg-black/20 px-4 py-1.5 rounded-full border border-white/10 text-xs font-medium items-center gap-2 sm:flex">
                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sistem Aktif
              </div>
-             <div className="h-8 w-8 rounded-full theme-primary-bg flex items-center justify-center theme-title font-bold text-sm shadow-lg shadow-emerald-900/20">
+             <div className="hidden max-w-40 truncate text-xs font-semibold theme-title sm:block" title={userName || "Memuat..."}>
+               {userName || "Memuat..."}
+             </div>
+             <div className="h-9 w-9 rounded-full theme-primary-bg flex items-center justify-center theme-title font-bold text-sm shadow-lg shadow-emerald-900/20">
                {userName ? userName.charAt(0).toUpperCase() : '?'}
              </div>
            </div>
         </header>
 
-        <div className="flex-1 overflow-auto p-3 sm:p-6 flex flex-col">
+        <div className="min-w-0 flex-1 overflow-auto p-3 pb-24 sm:p-6 sm:pb-6 flex flex-col">
           <Outlet />
           
-          <footer className='mt-auto pt-6 flex flex-col md:flex-row gap-2 justify-between items-center text-[10px] theme-body opacity-50 font-mono'> 
-            <div>Portal SISKOPATUH V.2 - By: Tim IT & Apps Develop - Kemenhaj RI</div> 
-            <div>KEMENTERIAN HAJI DAN UMROH REPUBLIK INDONESIA © 2026</div> 
+          <footer className='mt-auto w-full pt-6 flex flex-col md:flex-row gap-2 justify-between items-center text-center text-[11px] leading-4 theme-body opacity-70 sm:text-xs'> 
+            <div className="w-full md:w-auto">Portal SISKOPATUH V.2</div> 
+            <div className="w-full break-words md:w-auto">KEMENTERIAN HAJI DAN UMRAH REPUBLIK INDONESIA © 2026</div> 
           </footer>
         </div>
       </main>
