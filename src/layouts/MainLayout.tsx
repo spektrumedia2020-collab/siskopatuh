@@ -53,21 +53,21 @@ export function MainLayout() {
 
   return (
     <div className="min-h-screen flex min-w-0 flex-col overflow-x-hidden font-sans theme-container">
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800 theme-card backdrop-blur supports-[backdrop-filter]:bg-opacity-60 transition-all duration-300">
+      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-slate-950/95 backdrop-blur transition-all duration-300">
         <div className="container mx-auto max-w-7xl px-3 sm:px-4 min-h-20 py-3 flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt="Logo" className="max-h-16 max-w-[120px] object-contain drop-shadow-md" />
+              <img src={logoUrl} alt="Logo" className="max-h-10 max-w-[96px] object-contain drop-shadow-md sm:max-h-12 sm:max-w-[110px]" />
             ) : (
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--theme-primary)] rounded-xl flex items-center justify-center font-bold text-xl sm:text-2xl theme-button-text shadow-lg">K</div>
             )}
             <Link to="/" className="min-w-0 font-bold text-base sm:text-xl tracking-tight flex flex-col justify-center theme-title">
               <span className="truncate">SISKOPATUH V.2</span>
-              <span className="hidden sm:block text-xs font-normal opacity-80 mt-0.5 tracking-normal">Sistem Komputerisasi Pengelolaan Terpadu Umrah dan Haji Khusus</span>
+              <span className="hidden lg:block text-xs font-normal opacity-80 mt-0.5 tracking-normal">Sistem Komputerisasi Pengelolaan Terpadu Umrah dan Haji Khusus</span>
             </Link>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-6">
             <Link to="/" className={`text-sm font-bold tracking-wider uppercase ${location.pathname === '/' ? 'text-[var(--theme-primary)]' : 'opacity-70 hover:opacity-100'}`}>Beranda</Link>
             <Link to="/cek-porsi" className={`text-sm font-bold tracking-wider uppercase ${location.pathname === '/cek-porsi' ? 'text-[var(--theme-primary)]' : 'opacity-70 hover:opacity-100'}`}>Cek Porsi</Link>
             <Link to="/direktori" className={`text-sm font-bold tracking-wider uppercase ${location.pathname === '/direktori' ? 'text-[var(--theme-primary)]' : 'opacity-70 hover:opacity-100'}`}>Direktori Penyelenggara</Link>
@@ -77,7 +77,7 @@ export function MainLayout() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <button type="button" aria-label="Buka navigasi" aria-expanded={mobileMenuOpen} className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 theme-title md:hidden" onClick={() => setMobileMenuOpen((open) => !open)}>
+            <button type="button" aria-label="Buka navigasi" aria-expanded={mobileMenuOpen} className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 theme-title lg:hidden" onClick={() => setMobileMenuOpen((open) => !open)}>
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
             <Link
@@ -91,7 +91,7 @@ export function MainLayout() {
           </div>
         </div>
         {mobileMenuOpen && (
-          <nav className="border-t border-white/10 bg-slate-950/95 px-4 py-3 md:hidden">
+          <nav className="border-t border-white/10 bg-slate-950/95 px-4 py-3 lg:hidden">
             <div className="mx-auto flex max-w-7xl flex-col gap-1">
               <Link to="/" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm font-bold theme-title">Beranda</Link>
               <Link to="/cek-porsi" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm font-bold theme-title">Cek Porsi</Link>
@@ -102,14 +102,25 @@ export function MainLayout() {
         )}
       </header>
 
-      <main className="min-w-0 flex-1 container mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6">
+      <main className="min-w-0 flex-1 container mx-auto max-w-7xl bg-slate-950 px-3 py-4 sm:px-4 sm:py-6">
         <Outlet />
       </main>
       
-      <footer className="border-t border-slate-800 theme-card py-6 mt-auto">
-        <div className="container mx-auto max-w-7xl px-4 flex flex-col md:flex-row gap-2 justify-between items-center text-[10px] opacity-50 font-mono">
-          <div>Portal SISKOPATUH V.2 - By: Tim IT & Apps Develop - Kemenhaj RI</div>
-          <div>KEMENTERIAN HAJI DAN UMROH REPUBLIK INDONESIA © 2026</div>
+      <footer className="border-t border-white/10 bg-slate-950 py-6 mt-auto">
+        <div className="container mx-auto max-w-7xl px-4 flex flex-col gap-5 text-xs theme-body">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="font-bold theme-title">SISKOPATUH V.2</div>
+              <div className="mt-1 max-w-sm leading-5 opacity-70">Sistem Komputerisasi Pengelolaan Terpadu Umrah dan Haji Khusus</div>
+            </div>
+            <nav aria-label="Navigasi footer" className="flex flex-wrap gap-x-4 gap-y-2">
+              <Link to="/" className="hover:text-emerald-400">Beranda</Link>
+              <Link to="/cek-porsi" className="hover:text-emerald-400">Cek Porsi</Link>
+              <Link to="/direktori" className="hover:text-emerald-400">Direktori</Link>
+              <Link to="/panduan" className="hover:text-emerald-400">Panduan</Link>
+            </nav>
+          </div>
+          <div className="border-t border-white/10 pt-4 text-[10px] opacity-60">KEMENTERIAN HAJI DAN UMRAH REPUBLIK INDONESIA © 2026</div>
         </div>
       </footer>
     </div>

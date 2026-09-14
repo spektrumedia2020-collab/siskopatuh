@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs, query, limit, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, ShieldCheck, CheckCircle2, MapPin, Phone, Mail, Award, AlertCircle, HelpCircle, ChevronRight } from "lucide-react";
+import { Search, ShieldCheck, CheckCircle2, MapPin, Phone, Mail, Award, AlertCircle, HelpCircle, ChevronRight, BookOpen, LogIn, ArrowRight, LockKeyhole, Gauge, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from "recharts";
@@ -49,29 +49,25 @@ const LiveSystemStatus = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const renderStatus = (name: string, data: any) => {
-    if (data.status === 'checking') {
-      return <span className="text-yellow-500 animate-pulse">{name} (Menghubungkan...)</span>;
-    }
-    return (
-      <span className="flex items-center gap-1">
-        {name} (Online <span className="text-[10px] opacity-70">{data.ping}ms</span>)
+  const renderStatus = (name: string, data: any) => (
+    <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg px-2 py-1.5 sm:justify-start sm:px-0 sm:py-0">
+      <span className="truncate">{name}</span>
+      <span className={`shrink-0 ${data.status === 'checking' ? 'text-amber-400' : 'text-emerald-400'}`}>
+        {data.status === 'checking' ? 'Menghubungkan...' : `Online · ${data.ping} ms`}
       </span>
-    );
-  };
+    </div>
+  );
 
   return (
-    <div className="bg-[var(--theme-primary)]/10 border border-[var(--theme-primary)]/30 rounded-xl p-3 mb-6 flex items-center justify-center gap-3 backdrop-blur-sm">
-      <span className="flex h-2 w-2 rounded-full bg-[var(--theme-primary)] animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-      <div className="text-xs font-medium theme-body flex flex-wrap items-center gap-2 justify-center">
-        <strong className="text-[var(--theme-primary)] font-bold">Status layanan (simulasi):</strong> 
-        <div className="flex items-center gap-2">
-          {renderStatus('Integrasi BPKH', statuses.bpkh)}
-          <span className="opacity-40">&bull;</span>
-          {renderStatus('Siskohat', statuses.siskohat)}
-          <span className="opacity-40">&bull;</span>
-          {renderStatus('Layanan Imigrasi', statuses.imigrasi)}
-        </div>
+    <div className="mb-5 rounded-xl border border-white/10 bg-slate-900/50 p-3 sm:p-4">
+      <div className="mb-3 flex items-center gap-2 text-xs font-bold theme-title">
+        <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+        Status layanan (simulasi)
+      </div>
+      <div className="grid gap-1 text-xs theme-body sm:grid-cols-3 sm:gap-4">
+        {renderStatus('Integrasi BPKH', statuses.bpkh)}
+        {renderStatus('Siskohat', statuses.siskohat)}
+        {renderStatus('Layanan Imigrasi', statuses.imigrasi)}
       </div>
     </div>
   );
@@ -298,18 +294,57 @@ export function PublicLanding() {
   const publicHeroTitle = heroSettings.title
     .replace(/\bKementrian\b/g, 'Kementerian')
     .replace(/\bUmroh\b/g, 'Umrah');
+  const isGenericHero = !publicHeroTitle || /menghadirkan solusi masa depan/i.test(publicHeroTitle);
+  const heroTitle = isGenericHero ? 'Sistem Terpadu Pengelolaan Umrah & Haji Khusus' : publicHeroTitle;
+  const heroSubtitle = !heroSettings.subtitle || /pusat kendali operasional terpadu/i.test(heroSettings.subtitle)
+    ? 'SISKOPATUH V2.0 menghadirkan pengelolaan yang terintegrasi, transparan, dan mudah diakses dalam satu portal.'
+    : heroSettings.subtitle;
 
 
   return (
-    <div className="flex min-w-0 flex-col w-full theme-body">
+    <div className="public-landing flex min-w-0 flex-col w-full theme-body">
 
       {/* System Status Banner */}
       <LiveSystemStatus />
 
+      {/* Primary landing hero */}
+      <section className="relative mb-8 overflow-hidden rounded-[24px] border border-white/10 bg-slate-900 shadow-2xl">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(16,185,129,0.18),transparent_38%)]"></div>
+        <div className="relative grid items-center gap-8 px-5 py-8 sm:px-8 sm:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-12 lg:py-14">
+          <div className="max-w-2xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-300">
+              <ShieldCheck className="h-4 w-4" /> Portal layanan terpadu
+            </div>
+            <h1 className="max-w-[680px] text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-4xl lg:text-5xl">{heroTitle}</h1>
+            <p className="mt-5 max-w-[620px] text-base leading-7 text-slate-300 sm:text-lg">{heroSubtitle}</p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link to="/login" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-emerald-950/30 transition hover:bg-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300">
+                Masuk SISKOPATUH <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link to="/panduan" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300">
+                <BookOpen className="h-4 w-4" /> Baca Panduan
+              </Link>
+            </div>
+          </div>
+          <div className="relative hidden min-h-[250px] overflow-hidden rounded-2xl border border-white/10 bg-slate-950/50 lg:block">
+            {heroSettings.backgroundImageUrl ? (
+              <img src={heroSettings.backgroundImageUrl} alt="Identitas visual SISKOPATUH" className="absolute inset-0 h-full w-full object-cover opacity-70" />
+            ) : (
+              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,0.25),transparent_55%),linear-gradient(315deg,#0f172a,#111827)]"></div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent"></div>
+            <div className="absolute bottom-5 left-5 right-5 rounded-xl border border-white/10 bg-slate-950/75 p-4 backdrop-blur-sm">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-300">Satu portal, tiga kebutuhan utama</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">Informasi porsi, direktori penyelenggara, dan panduan layanan dalam satu tempat.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Twin Cards (Managed from Admin) */}
       {hasTwinCards && <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Left Card (1/3) */}
-        <Card className="theme-card border-white/10 shadow-xl col-span-1 overflow-hidden relative min-h-[300px] flex flex-col justify-end p-6">
+        <Card className="theme-card border-white/10 shadow-xl col-span-1 overflow-hidden relative min-h-[180px] max-h-[220px] flex flex-col justify-end p-5">
           {twinCardSettings.leftCard.imageUrl && (
             <div 
               className="absolute inset-0 bg-cover bg-center"
@@ -340,7 +375,7 @@ export function PublicLanding() {
         </Card>
 
         {/* Right Card (2/3) */}
-        <Card className="theme-card border-white/10 shadow-xl col-span-1 lg:col-span-2 overflow-hidden relative min-h-[300px] flex flex-col justify-end p-6 lg:p-8">
+        <Card className="theme-card border-white/10 shadow-xl col-span-1 lg:col-span-2 overflow-hidden relative min-h-[180px] max-h-[220px] flex flex-col justify-end p-5 lg:p-8">
           {twinCardSettings.rightCard.imageUrl && (
             <div 
               className="absolute inset-0 bg-cover bg-center"
@@ -371,37 +406,6 @@ export function PublicLanding() {
         </Card>
       </section>}
       
-      {/* Hero Banner (Managed from Admin) */}
-      <section 
-        className="theme-card bg-opacity-50 border border-white/10 rounded-2xl relative overflow-hidden min-h-[300px] mb-8 flex flex-col justify-center p-8 lg:p-12"
-        style={heroSettings.backgroundImageUrl ? {
-          backgroundImage: `url(${heroSettings.backgroundImageUrl})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundColor: 'transparent'
-        } : {}}
-      >
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[var(--theme-primary)] to-transparent pointer-events-none"></div>
-        
-        {/* Dim overlay if background image exists for text readability */}
-        {heroSettings.backgroundImageUrl && (
-          <div className="absolute inset-0 bg-slate-900/60 pointer-events-none"></div>
-        )}
-
-        <div className="relative z-10 w-full max-w-2xl">
-          {publicHeroTitle && (
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md mb-4">
-              {publicHeroTitle}
-            </h1>
-          )}
-          {heroSettings.subtitle && (
-            <p className="text-sm md:text-base text-slate-200 drop-shadow-md leading-relaxed">
-              {heroSettings.subtitle}
-            </p>
-          )}
-        </div>
-      </section>
-      
       {/* Kewajiban PPIU PIHK Banner */}
       <div className="bg-gradient-to-r from-emerald-900 to-slate-900 border border-emerald-500/30 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-center gap-6 shadow-2xl relative overflow-hidden">
          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
@@ -424,6 +428,35 @@ export function PublicLanding() {
             </div>
          </div>
       </div>
+      <section className="mb-12">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-400">Akses cepat</p>
+            <h2 className="mt-1 text-2xl font-bold tracking-tight theme-title">Layanan SISKOPATUH</h2>
+          </div>
+          <p className="hidden max-w-sm text-right text-sm leading-6 theme-body sm:block">Pilih layanan yang Anda butuhkan untuk memulai.</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link to="/cek-porsi" className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:-translate-y-1 hover:border-emerald-400/40 hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300">
+            <Search className="h-6 w-6 text-emerald-400" />
+            <h3 className="mt-4 text-base font-bold theme-title">Cek Porsi</h3>
+            <p className="mt-2 text-sm leading-6 theme-body">Periksa informasi porsi haji Anda dengan mudah.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-emerald-400">Buka layanan <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span>
+          </Link>
+          <Link to="/direktori" className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:-translate-y-1 hover:border-emerald-400/40 hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300">
+            <Network className="h-6 w-6 text-emerald-400" />
+            <h3 className="mt-4 text-base font-bold theme-title">Direktori Penyelenggara</h3>
+            <p className="mt-2 text-sm leading-6 theme-body">Temukan informasi penyelenggara umrah dan haji khusus.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-emerald-400">Lihat direktori <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span>
+          </Link>
+          <Link to="/panduan" className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:-translate-y-1 hover:border-emerald-400/40 hover:bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300">
+            <BookOpen className="h-6 w-6 text-emerald-400" />
+            <h3 className="mt-4 text-base font-bold theme-title">Baca Panduan</h3>
+            <p className="mt-2 text-sm leading-6 theme-body">Pelajari cara menggunakan layanan SISKOPATUH.</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-emerald-400">Buka panduan <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" /></span>
+          </Link>
+        </div>
+      </section>
       {/* Action Items Moved from Hero */}
       <section className="flex flex-col md:flex-row items-stretch justify-between gap-6 mb-12">
         <div className="flex-1">
@@ -480,7 +513,7 @@ export function PublicLanding() {
           </div>
           <div>
             <h2 className="text-2xl font-bold tracking-tight theme-title">Transparansi Kuota Nasional</h2>
-            <p className="text-sm theme-body">Data terpadu kuota jemaah haji secara real-time</p>
+            <p className="text-sm theme-body">Ringkasan data kuota jemaah haji dalam portal publik</p>
           </div>
         </div>
         
@@ -821,6 +854,26 @@ export function PublicLanding() {
               LIHAT SELURUH DIREKTORI &rarr;
             </Button>
           </div>
+        </div>
+      </section>
+
+      <section className="mb-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-6 sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-400">Tentang portal</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight theme-title">Apa itu SISKOPATUH?</h2>
+          <p className="mt-4 max-w-2xl text-sm leading-7 theme-body">SISKOPATUH merupakan sistem komputerisasi pengelolaan terpadu yang mendukung penyelenggaraan umrah dan haji khusus melalui layanan yang terintegrasi, transparan, dan mudah diakses.</p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="flex gap-3"><Network className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" /><div><h3 className="text-sm font-bold theme-title">Terintegrasi</h3><p className="mt-1 text-xs leading-5 theme-body">Data dan layanan dirangkum dalam satu portal.</p></div></div>
+            <div className="flex gap-3"><LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" /><div><h3 className="text-sm font-bold theme-title">Transparan</h3><p className="mt-1 text-xs leading-5 theme-body">Informasi layanan disajikan lebih mudah dipahami.</p></div></div>
+            <div className="flex gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" /><div><h3 className="text-sm font-bold theme-title">Aman</h3><p className="mt-1 text-xs leading-5 theme-body">Mendukung pemantauan proses dan dokumen jemaah.</p></div></div>
+            <div className="flex gap-3"><Gauge className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" /><div><h3 className="text-sm font-bold theme-title">Efisien</h3><p className="mt-1 text-xs leading-5 theme-body">Akses informasi penting tanpa proses yang berbelit.</p></div></div>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-950/30 p-6 sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">Untuk publik</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Mulai dari layanan yang Anda perlukan</h2>
+          <p className="mt-4 text-sm leading-7 text-emerald-50/75">Gunakan akses resmi SISKOPATUH untuk memeriksa informasi, memahami panduan, atau masuk ke portal sesuai peran Anda.</p>
+          <Link to="/login" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200">Masuk ke SISKOPATUH <LogIn className="h-4 w-4" /></Link>
         </div>
       </section>
 
