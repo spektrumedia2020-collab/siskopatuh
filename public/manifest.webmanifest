@@ -1,0 +1,19 @@
+{
+  "name": "SISKOPATUH V2",
+  "short_name": "SISKOPATUH",
+  "description": "Portal terpadu untuk layanan umrah dan haji khusus.",
+  "lang": "id",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/logo.webp",
+      "sizes": "400x400",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ]
+}
