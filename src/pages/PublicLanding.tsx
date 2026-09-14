@@ -64,7 +64,7 @@ const LiveSystemStatus = () => {
     <div className="bg-[var(--theme-primary)]/10 border border-[var(--theme-primary)]/30 rounded-xl p-3 mb-6 flex items-center justify-center gap-3 backdrop-blur-sm">
       <span className="flex h-2 w-2 rounded-full bg-[var(--theme-primary)] animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
       <div className="text-xs font-medium theme-body flex flex-wrap items-center gap-2 justify-center">
-        <strong className="text-[var(--theme-primary)] font-bold">Status API (Mode Simulasi):</strong> 
+        <strong className="text-[var(--theme-primary)] font-bold">Status layanan (simulasi):</strong> 
         <div className="flex items-center gap-2">
           {renderStatus('Integrasi BPKH', statuses.bpkh)}
           <span className="opacity-40">&bull;</span>
@@ -292,16 +292,22 @@ export function PublicLanding() {
     { name: "Umrah (PPIU)", count: 70 },
   ];
   const barColors = ['#ef4444', '#f59e0b'];
+  const hasTwinCards = [twinCardSettings.leftCard, twinCardSettings.rightCard].some(
+    (card) => card.title || card.description || card.imageUrl
+  );
+  const publicHeroTitle = heroSettings.title
+    .replace(/\bKementrian\b/g, 'Kementerian')
+    .replace(/\bUmroh\b/g, 'Umrah');
 
 
   return (
-    <div className="flex flex-col w-full theme-body">
+    <div className="flex min-w-0 flex-col w-full theme-body">
 
       {/* System Status Banner */}
       <LiveSystemStatus />
 
       {/* Twin Cards (Managed from Admin) */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      {hasTwinCards && <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Left Card (1/3) */}
         <Card className="theme-card border-white/10 shadow-xl col-span-1 overflow-hidden relative min-h-[300px] flex flex-col justify-end p-6">
           {twinCardSettings.leftCard.imageUrl && (
@@ -363,7 +369,7 @@ export function PublicLanding() {
             )}
           </div>
         </Card>
-      </section>
+      </section>}
       
       {/* Hero Banner (Managed from Admin) */}
       <section 
@@ -383,9 +389,9 @@ export function PublicLanding() {
         )}
 
         <div className="relative z-10 w-full max-w-2xl">
-          {heroSettings.title && (
+          {publicHeroTitle && (
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-md mb-4">
-              {heroSettings.title}
+              {publicHeroTitle}
             </h1>
           )}
           {heroSettings.subtitle && (
