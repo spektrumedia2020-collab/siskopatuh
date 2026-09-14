@@ -169,7 +169,7 @@ export function ManajemenAdmin() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto pb-24">
+    <div className="mx-auto max-w-7xl space-y-6 p-3 pb-24 sm:p-6">
       {toastMessage && (
         <div className={`p-4 rounded-xl shadow-lg border text-sm font-bold flex justify-between items-center ${toastMessage.type === 'success' ? 'bg-emerald-900/50 text-emerald-400 border-emerald-900' : 'bg-rose-900/50 text-rose-400 border-rose-900'}`}>
           {toastMessage.title}
@@ -288,7 +288,7 @@ export function ManajemenAdmin() {
 
         {/* Kolom Kanan: Log Aktivitas */}
         <div className="space-y-6">
-          <Card className="theme-card border-white/10 h-[calc(100vh-180px)] flex flex-col">
+          <Card className="theme-card flex min-h-[320px] flex-col border-white/10 lg:h-[calc(100vh-180px)]">
             <CardHeader className="border-b border-white/5 pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-bold theme-title flex items-center gap-2">

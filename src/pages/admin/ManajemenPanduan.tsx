@@ -120,22 +120,22 @@ export function ManajemenPanduan() {
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-6">
-        <div>
+      <div className="mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight theme-title">Manajemen Panduan Aplikasi</h1>
           <p className="text-sm text-slate-400">Atur dan update fitur panduan ("Baca Panduan") yang akan dibaca oleh publik secara real-time.</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
           <button 
             onClick={() => setSections(defaultSections)}
-            className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-colors"
+            className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-slate-700"
           >
             Reset ke Default
           </button>
           <button 
             onClick={handleSave}
             disabled={saving}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg flex items-center gap-2 transition-colors"
+            className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2 text-sm font-bold text-white shadow-lg transition-colors hover:bg-emerald-500"
           >
             <Save className="w-4 h-4" />
             {saving ? "Menyimpan..." : "Update Halaman Panduan"}

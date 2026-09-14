@@ -525,6 +525,21 @@ export function PenyelenggaraDashboard() {
     return "Rp " + Math.round(num).toLocaleString('id-ID');
   };
 
+  const panelCard = "rounded-2xl border border-slate-800 bg-slate-900/80 shadow-[0_18px_45px_rgba(15,23,42,0.35)] backdrop-blur-sm";
+  const sectionTitle = "text-xl font-bold tracking-tight text-white";
+  const mutedLabel = "text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400";
+  const statusPill = (tone: 'emerald' | 'amber' | 'rose' | 'blue' | 'slate' | 'violet') => {
+    const map = {
+      emerald: 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+      amber: 'border border-amber-500/30 bg-amber-500/10 text-amber-400',
+      rose: 'border border-rose-500/30 bg-rose-500/10 text-rose-400',
+      blue: 'border border-blue-500/30 bg-blue-500/10 text-blue-400',
+      slate: 'border border-slate-600/40 bg-slate-800 text-slate-300',
+      violet: 'border border-violet-500/30 bg-violet-500/10 text-violet-400',
+    };
+    return `inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold ${map[tone]}`;
+  };
+
   // Computed Alerts
   const missingTicketPkgs = packages.filter(p => !p.buktiTiketPP);
   const unsyncedJemaahCount = seededJemaahsData.filter(j => !j.isSynced).length;
@@ -535,20 +550,24 @@ export function PenyelenggaraDashboard() {
       {/* Toast Notification */}
       {toastNotif && (
         <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
-            <div className="bg-emerald-950/90 border border-emerald-500/50 shadow-2xl shadow-emerald-900/20 rounded-xl p-4 flex gap-4 items-start max-w-sm">
-                <div className="bg-emerald-500/20 p-2 rounded-full text-emerald-400 shrink-0">
-                    <ShieldCheck className="w-5 h-5" />
+          <div className="max-w-sm rounded-2xl border border-emerald-500/40 bg-emerald-950/90 p-4 shadow-2xl shadow-emerald-950/30">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <h4 className="text-sm font-bold text-emerald-400">Pendaftar Baru!</h4>
+                  <button onClick={() => setToastNotif(null)} className="text-slate-400 hover:text-white" aria-label="Tutup notifikasi">
+                    <XCircle className="h-4 w-4" />
+                  </button>
                 </div>
-                <div>
-                    <h4 className="text-emerald-400 font-bold text-sm">Pendaftar Baru!</h4>
-                    <p className="text-white font-medium text-sm mt-1">{toastNotif.name}</p>
-                    <p className="text-slate-400 text-xs mt-0.5">{toastNotif.paket}</p>
-                <button onClick={() => setToastNotif(null)} className="text-slate-400 hover:text-white shrink-0">
-                    <XCircle className="w-4 h-4" />
-                </button>
+                <p className="mt-1 text-sm font-medium text-white">{toastNotif.name}</p>
+                <p className="mt-1 text-xs text-slate-300">{toastNotif.paket}</p>
+              </div>
             </div>
+          </div>
         </div>
-                </div>
       )}
       {activeTab === 'beranda' && (
         <div className="space-y-6 flex flex-col">
@@ -587,32 +606,36 @@ export function PenyelenggaraDashboard() {
       
           
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center h-32">
-            <h3 className="text-3xl font-bold text-slate-100">{packages.length > 0 ? packages.length : '4'}</h3>
-            <p className="text-sm font-medium text-slate-400 mt-1">Paket Aktif</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center h-32">
-            <h3 className="text-3xl font-bold text-emerald-400">{packages.reduce((acc, curr) => acc + curr.capacity - curr.filled - curr.reserved, 0) || '180'}</h3>
-            <p className="text-sm font-medium text-slate-400 mt-1">Kuota Tersedia</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center h-32">
-            <h3 className="text-3xl font-bold text-slate-100">{packages.reduce((acc, curr) => acc + curr.filled, 0) || '45'}</h3>
-            <p className="text-sm font-medium text-slate-400 mt-1">Jemaah Terdaftar</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-emerald-900/20 border-emerald-500/20">
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center h-32">
-            <h3 className="text-xl font-bold text-emerald-400">{formatCurrencyShort(termin1)}</h3>
-            <p className="text-sm font-medium text-emerald-500 mt-1">Total Escrow Cair</p>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <Card className={panelCard}>
+              <CardContent className="flex h-32 flex-col items-center justify-center p-4 text-center">
+                <span className={statusPill('blue')}>Live</span>
+                <h3 className="mt-3 text-3xl font-bold text-slate-100">{packages.length > 0 ? packages.length : '4'}</h3>
+                <p className="mt-1 text-sm font-medium text-slate-400">Paket Aktif</p>
+              </CardContent>
+            </Card>
+            <Card className={panelCard}>
+              <CardContent className="flex h-32 flex-col items-center justify-center p-4 text-center">
+                <span className={statusPill('emerald')}>Tersedia</span>
+                <h3 className="mt-3 text-3xl font-bold text-emerald-400">{packages.reduce((acc, curr) => acc + curr.capacity - curr.filled - curr.reserved, 0) || '180'}</h3>
+                <p className="mt-1 text-sm font-medium text-slate-400">Kuota Tersedia</p>
+              </CardContent>
+            </Card>
+            <Card className={panelCard}>
+              <CardContent className="flex h-32 flex-col items-center justify-center p-4 text-center">
+                <span className={statusPill('violet')}>Jemaah</span>
+                <h3 className="mt-3 text-3xl font-bold text-slate-100">{packages.reduce((acc, curr) => acc + curr.filled, 0) || '45'}</h3>
+                <p className="mt-1 text-sm font-medium text-slate-400">Jemaah Terdaftar</p>
+              </CardContent>
+            </Card>
+            <Card className={`${panelCard} border-emerald-500/20 bg-emerald-950/20`}>
+              <CardContent className="flex h-32 flex-col items-center justify-center p-4 text-center">
+                <span className={statusPill('emerald')}>Escrow</span>
+                <h3 className="mt-3 text-xl font-bold text-emerald-400">{formatCurrencyShort(termin1)}</h3>
+                <p className="mt-1 text-sm font-medium text-emerald-500">Total Escrow Cair</p>
+              </CardContent>
+            </Card>
+          </div>
 
       {/* Persistent Alerts */}
       {activeAlerts.length > 0 && (
@@ -1352,17 +1375,17 @@ export function PenyelenggaraDashboard() {
               >
                 <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} /> {isSyncing ? 'Menyinkronkan...' : 'Sinkronisasi Pusat'}
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="h-8 gap-2 /30  /10 hover:/20"
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 gap-2 border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300"
                 onClick={() => setShowImportModal(true)}
               >
                 <Upload className="h-4 w-4" /> Import Excel (Bulk)
               </Button>
-              <Button 
-                size="sm" 
-                className="h-8 gap-2  "
+              <Button
+                size="sm"
+                className="h-8 gap-2 bg-gradient-to-r from-emerald-500 to-sky-500 text-slate-950 shadow-lg shadow-emerald-900/20"
                 onClick={() => setShowAddJemaahModal(true)}
               >
                 <Plus className="h-4 w-4" /> Tambah Jemaah
@@ -2009,10 +2032,10 @@ export function PenyelenggaraDashboard() {
                 >
                   Tutup
                 </Button>
-                <Button 
+                <Button
                   type="button"
                   variant="outline"
-                  className="/30  "
+                  className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
                   onClick={() => {
                     setToastMessage({title: 'Pembayaran Ditolak', desc: 'Bukti transfer tidak valid.', type: 'error'}); setTimeout(() => setToastMessage(null), 3000);
                     setShowBuktiModal({show: false});

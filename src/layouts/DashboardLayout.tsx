@@ -50,8 +50,8 @@ const adminItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: "Pantauan Kuota & Antrean", href: "/admin" },
   { icon: Building, label: "Verifikasi Penyelenggara", href: "/admin/registrasi" },
   { icon: FileText, label: "Kepatuhan Penyelenggara", href: "/admin/kepatuhan" },
-  { icon: Activity, label: "Radar Kesiapan Operasional", href: "/admin/operasional" },
   { icon: ShieldAlert, label: "Early Warning System", href: "/admin/ews" },
+  { icon: Activity, label: "Radar Kesiapan Operasional", href: "/admin/operasional" },
   { icon: Users, label: "Rekap Aduan Jemaah", href: "/admin/aduan" },
   { icon: Scan, label: "Pindai Operator Lapangan", href: "/admin/scanner" },
   { icon: Network, label: "Ledger Mutasi Jemaah", href: "/admin/ledger" },
@@ -147,6 +147,14 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
     role === 'penyelenggara' ? penyelenggaraItems : 
     filteredAdminItems;
 
+  const adminSectionLabels: Record<string, string> = {
+    '/admin': 'Prioritas utama',
+    '/admin/registrasi': 'Pengawasan & perlindungan',
+    '/admin/scanner': 'Operasional lapangan',
+    '/admin/integrasi': 'Integrasi lintas instansi',
+    '/admin/desain': 'Konfigurasi portal'
+  };
+
     
   const roleTitle = 
     role === 'jemaah' ? 'Portal Calon Jemaah' : 
@@ -154,7 +162,7 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
     'Admin Command Center';
 
   return (
-    <div className="dashboard-shell flex min-h-screen min-w-0 theme-container font-sans">
+    <div className="dashboard-shell flex min-h-screen min-w-0 theme-container overflow-x-hidden font-sans">
       {/* Sidebar */}
       <aside className={`sidebar-gradient fixed inset-y-0 left-0 z-50 w-72 max-w-[86vw] border-r border-emerald-300/15 flex flex-col transition-transform duration-200 lg:static lg:z-auto lg:w-72 lg:max-w-none lg:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex min-h-16 items-center justify-between gap-3 border-b border-white/10 px-4 sm:px-5">
@@ -187,32 +195,36 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
               <div className="mt-0.5 text-[10px] theme-body opacity-60">Akun aktif</div>
             </div>
           </div>
-          <div className="mb-3 px-1 text-[10px] font-bold uppercase tracking-[0.16em] theme-body opacity-50">Navigasi utama</div>
           <nav className="space-y-2">
             {sidebarItems.map((item) => {
               const isActive = location.pathname === item.href;
               return (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  aria-current={isActive ? 'page' : undefined}
-                  className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
-                    isActive
-                      ? "bg-gradient-to-r from-emerald-500 to-sky-500 border-emerald-300/40 text-slate-950 shadow-lg shadow-emerald-950/25 ring-1 ring-emerald-300/30"
-                      : "bg-slate-950/20 theme-body border-transparent hover:bg-emerald-400/10 hover:border-emerald-300/15 hover:theme-title"
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
+                <React.Fragment key={item.href}>
+                  {role === 'admin' && adminSectionLabels[item.href] && (
+                    <div className="px-1 pb-1 pt-4 text-[9px] font-bold uppercase tracking-[0.16em] theme-body opacity-50 first:pt-0">
+                      {adminSectionLabels[item.href]}
+                    </div>
+                  )}
+                  <Link
+                    to={item.href}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
+                      isActive
+                        ? "bg-gradient-to-r from-emerald-500 to-sky-500 border-emerald-300/40 text-slate-950 shadow-lg shadow-emerald-950/25 ring-1 ring-emerald-300/30"
+                        : "bg-slate-950/20 theme-body border-transparent hover:bg-emerald-400/10 hover:border-emerald-300/15 hover:theme-title"
+                    }`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                </React.Fragment>
               );
             })}
           </nav>
-        </div>
-        
-        <div className="mt-auto p-6">
-          <button 
-            className="w-full flex items-center justify-center gap-2 text-[10px] font-bold theme-primary-bg hover:opacity-90 shadow-sm border-transparent rounded-lg py-2 transition-colors"
+          <button
+            type="button"
+            aria-label="Keluar dari akun"
+            className="mt-[100px] inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-rose-300/20 bg-rose-500/10 py-2 text-[10px] font-bold text-rose-200 transition-colors hover:bg-rose-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
@@ -230,7 +242,7 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
       )}
 
       {/* Main content */}
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <main className="flex min-w-0 flex-1 flex-col overflow-x-hidden">
         
         <header className="min-h-16 border-b border-slate-800 flex items-center gap-3 px-3 py-3 sm:px-6 lg:px-8 z-10 flex-shrink-0 justify-between bg-black/20">
            <div className="flex min-w-0 items-center gap-3">
@@ -247,6 +259,15 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
              </h1>
            </div>
            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+             <button
+               type="button"
+               aria-label="Keluar dari akun"
+               className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-rose-300/20 bg-rose-500/10 px-2.5 text-[10px] font-bold text-rose-200 transition-colors hover:bg-rose-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 sm:px-3 sm:text-xs"
+               onClick={handleLogout}
+             >
+               <LogOut className="h-4 w-4" />
+               <span>Keluar</span>
+             </button>
              {role === 'admin' && (
                <div className="bg-rose-950/30 border border-rose-900/50 px-4 py-1.5 rounded-full flex items-center gap-2 mr-2">
                  <ShieldCheck className="w-4 h-4 text-rose-500" />
@@ -267,7 +288,7 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
            </div>
         </header>
 
-        <div className="min-w-0 flex-1 overflow-auto p-3 pb-24 sm:p-6 sm:pb-6 flex flex-col">
+        <div className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-3 pb-24 sm:p-6 sm:pb-6 flex flex-col">
           <Outlet />
           
           <footer className='mt-auto w-full pt-6 flex flex-col md:flex-row gap-2 justify-between items-center text-center text-[11px] leading-4 theme-body opacity-70 sm:text-xs'> 
