@@ -3,13 +3,13 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
-import { X, AlertCircle, Info, PlaneTakeoff, ScanLine, QrCode, Scan, Network, Fingerprint, ArrowRightLeft, Link2, Key, CheckCircle, SmartphoneNfc, Plane, Bed, Briefcase, ActivitySquare, AlertOctagon, CheckCircle2, ShieldAlert, Users, Globe2, ShieldCheck, Clock, Shield, MapPin, AlertTriangle, MessageSquareWarning, BarChart3, ListFilter, ThumbsDown, ArrowDownRight, ArrowUpRight, UserX, Building, Plus, Upload, FileCheck, XCircle, Search, Building2, Palette, PaintBucket, Image as ImageIcon, Type, Save, Layout, RefreshCw } from "lucide-react";
+import { X, AlertCircle, Info, PlaneTakeoff, ScanLine, QrCode, Scan, Network, Fingerprint, ArrowRightLeft, Link2, Key, CheckCircle, SmartphoneNfc, Plane, Bed, Briefcase, ActivitySquare, AlertOctagon, CheckCircle2, ShieldAlert, Users, Globe2, ShieldCheck, Clock, Shield, MapPin, AlertTriangle, MessageSquareWarning, BarChart3, ListFilter, ThumbsDown, ArrowDownRight, ArrowUpRight, UserX, Building, Plus, Upload, FileCheck, XCircle, Search, Building2, Palette, PaintBucket, Image as ImageIcon, Type, Save, Layout, RefreshCw, Edit, Trash2, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { recordAdminLog } from "@/lib/log";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, Legend, PieChart, Pie, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { useTheme } from "../../contexts/ThemeContext";
-import { doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, addDoc, query, where, orderBy, limit } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, onSnapshot, addDoc, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { sendEmailNotification } from "@/lib/emailService";
 
@@ -42,6 +42,8 @@ export function AdminDashboard() {
   const [isUploadingPanduan, setIsUploadingPanduan] = useState(false);
   const [direktoriList, setDirektoriList] = useState<any[]>([]);
   const [activePemohon, setActivePemohon] = useState<any>(null);
+  const [registrationDraft, setRegistrationDraft] = useState<any>(null);
+  const [registrationModalMode, setRegistrationModalMode] = useState<'view' | 'edit' | 'create'>('view');
   const [searchPemohon, setSearchPemohon] = useState('');
   const [aduanSubTab, setAduanSubTab] = useState('rekap');
   const [filterWilayah, setFilterWilayah] = useState('Semua Wilayah');
@@ -255,6 +257,76 @@ export function AdminDashboard() {
     };
     fetchDir();
   }, []);
+
+  const openRegistrationModal = (item: any, mode: 'view' | 'edit') => {
+    setActivePemohon(item);
+    setRegistrationDraft({ ...item });
+    setRegistrationModalMode(mode);
+  };
+
+  const openCreateRegistrationModal = () => {
+    setActivePemohon(null);
+    setRegistrationDraft({ name: '', type: 'PIHK', status: 'MENUNGGU', wilayahOperasional: '' });
+    setRegistrationModalMode('create');
+  };
+
+  const closeRegistrationModal = () => {
+    setRegistrationDraft(null);
+    setRegistrationModalMode('view');
+  };
+
+  const saveRegistration = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!registrationDraft?.name?.trim()) return;
+
+    try {
+      const payload = {
+        name: registrationDraft.name.trim(),
+        type: registrationDraft.type || 'PIHK',
+        status: registrationDraft.status || 'MENUNGGU',
+        wilayahOperasional: registrationDraft.wilayahOperasional || '-'
+      };
+
+      if (registrationModalMode === 'create') {
+        const created = await addDoc(collection(db, 'direktori'), payload);
+        const newItem = { id: created.id, ...payload };
+        setDirektoriList(prev => [newItem, ...prev]);
+        recordAdminLog(`Menambahkan pemohon: ${payload.name}`);
+        setActivePemohon(newItem);
+      } else if (registrationDraft.id) {
+        const isLocalFallback = /^(PIHK|PPIU)-/.test(registrationDraft.id);
+        if (!isLocalFallback) {
+          await updateDoc(doc(db, 'direktori', registrationDraft.id), payload);
+        }
+        const updatedItem = { ...registrationDraft, ...payload };
+        setDirektoriList(prev => prev.map(item => item.id === registrationDraft.id ? updatedItem : item));
+        setActivePemohon(updatedItem);
+        recordAdminLog(`Memperbarui pemohon: ${payload.name}`);
+      }
+      closeRegistrationModal();
+    } catch (error) {
+      console.error(error);
+      setToastMessage({ title: 'Gagal menyimpan pemohon', desc: 'Periksa koneksi lalu coba lagi.', type: 'error' });
+      setTimeout(() => setToastMessage(null), 4000);
+    }
+  };
+
+  const deleteRegistration = async (item: any) => {
+    if (!window.confirm(`Hapus pemohon ${item.name}?`)) return;
+    try {
+      const isLocalFallback = /^(PIHK|PPIU)-/.test(item.id || '');
+      if (!isLocalFallback && item.id) {
+        await deleteDoc(doc(db, 'direktori', item.id));
+      }
+      setDirektoriList(prev => prev.filter(entry => entry.id !== item.id));
+      if (activePemohon?.id === item.id) setActivePemohon(null);
+      recordAdminLog(`Menghapus pemohon: ${item.name}`);
+    } catch (error) {
+      console.error(error);
+      setToastMessage({ title: 'Gagal menghapus pemohon', desc: 'Periksa koneksi lalu coba lagi.', type: 'error' });
+      setTimeout(() => setToastMessage(null), 4000);
+    }
+  };
   
   const { logoUrl, setLogoUrl, colors, setColors } = useTheme();
   const [localColors, setLocalColors] = useState(colors);
@@ -751,6 +823,78 @@ export function AdminDashboard() {
         </div>
       )}
 
+          {registrationDraft && (
+            <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/80 p-3 backdrop-blur-sm sm:items-center sm:p-6">
+              <div role="dialog" aria-modal="true" aria-labelledby="registration-modal-title" className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-700 bg-[#0b1120] shadow-2xl" onClick={(event) => event.stopPropagation()}>
+                <div className="flex items-start justify-between gap-4 border-b border-slate-800 p-5 sm:p-6">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400">
+                      {registrationModalMode === 'create' ? 'Pendaftaran baru' : registrationModalMode === 'edit' ? 'Edit data pemohon' : 'Detail pemohon'}
+                    </p>
+                    <h2 id="registration-modal-title" className="mt-1 text-xl font-bold text-white">
+                      {registrationDraft.name || 'Pemohon baru'}
+                    </h2>
+                  </div>
+                  <Button type="button" variant="outline" size="icon" className="h-9 w-9 border-slate-700" aria-label="Tutup detail pemohon" onClick={(event) => { event.stopPropagation(); closeRegistrationModal(); }}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <form onSubmit={saveRegistration}>
+                  <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
+                    <label className="space-y-2 sm:col-span-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nama penyelenggara</span>
+                      <input disabled={registrationModalMode === 'view'} value={registrationDraft.name || ''} onChange={(event) => setRegistrationDraft({ ...registrationDraft, name: event.target.value })} className="h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-sm text-white disabled:opacity-70" placeholder="Nama PT / travel" />
+                    </label>
+                    <label className="space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Jenis izin</span>
+                      <div className="relative">
+                        <select disabled={registrationModalMode === 'view'} value={registrationDraft.type || 'PIHK'} onChange={(event) => setRegistrationDraft({ ...registrationDraft, type: event.target.value })} className="h-10 w-full appearance-none rounded-lg border border-slate-700 bg-slate-950 px-3 pr-10 text-sm text-white outline-none transition-colors focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 disabled:opacity-70">
+                          <option value="PIHK">PIHK</option>
+                          <option value="PPIU">PPIU</option>
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-300" />
+                      </div>
+                    </label>
+                    <label className="space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</span>
+                      <div className="relative">
+                        <select disabled={registrationModalMode === 'view'} value={registrationDraft.status || 'MENUNGGU'} onChange={(event) => setRegistrationDraft({ ...registrationDraft, status: event.target.value })} className="h-10 w-full appearance-none rounded-lg border border-slate-700 bg-slate-950 px-3 pr-10 text-sm text-white outline-none transition-colors focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 disabled:opacity-70">
+                          <option value="MENUNGGU">Menunggu</option>
+                          <option value="DISETUJUI">Disetujui</option>
+                          <option value="DITOLAK">Ditolak</option>
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-300" />
+                      </div>
+                    </label>
+                    <label className="space-y-2 sm:col-span-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Wilayah operasional</span>
+                      <input disabled={registrationModalMode === 'view'} value={registrationDraft.wilayahOperasional || ''} onChange={(event) => setRegistrationDraft({ ...registrationDraft, wilayahOperasional: event.target.value })} className="h-10 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-sm text-white disabled:opacity-70" placeholder="Contoh: DKI Jakarta" />
+                    </label>
+                    {registrationModalMode === 'view' && (
+                      <div className="sm:col-span-2 rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-400">
+                        <p>ID registrasi: <span className="font-mono text-slate-200">{registrationDraft.id || '-'}</span></p>
+                        <p className="mt-1">Dokumen dan validasi AHU dapat diproses setelah data pemohon diperiksa.</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col-reverse gap-2 border-t border-slate-800 p-5 sm:flex-row sm:justify-end sm:p-6">
+                    <Button type="button" variant="outline" className="border-slate-700" onClick={(event) => { event.stopPropagation(); closeRegistrationModal(); }}>Tutup</Button>
+                    {registrationModalMode === 'view' ? (
+                      <Button type="button" className="bg-emerald-600 hover:bg-emerald-500" onClick={(event) => { event.stopPropagation(); setRegistrationModalMode('edit'); }}>
+                        <Edit className="mr-2 h-4 w-4" /> Edit Data
+                      </Button>
+                    ) : (
+                      <Button type="submit" className="bg-emerald-600 hover:bg-emerald-500">
+                        <Save className="mr-2 h-4 w-4" /> Simpan Pemohon
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
       {/* The generic header has been moved INSIDE the kuota tab logic below so it doesn't pollute others! */}
       {activeTab === 'kuota' && (
         <div className="flex flex-col gap-4 flex-grow">
@@ -1074,10 +1218,9 @@ export function AdminDashboard() {
       )}
 
       {activeTab === 'registrasi' && (
-        <div className="flex flex-col lg:flex-row gap-6 flex-grow animate-in fade-in h-full">
-          {/* Left Panel - List */}
-          <div className="w-full lg:w-1/3 flex flex-col gap-4">
-            <div className="relative">
+        <div className="flex min-w-0 flex-col gap-6 animate-in fade-in">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative min-w-0 flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
               <input 
                 type="text"
@@ -1087,15 +1230,19 @@ export function AdminDashboard() {
                 onChange={(e) => setSearchPemohon(e.target.value)}
               />
             </div>
+            <Button className="shrink-0 bg-emerald-600 hover:bg-emerald-500" onClick={openCreateRegistrationModal}>
+              <Plus className="mr-2 h-4 w-4" /> Tambah Pemohon
+            </Button>
+          </div>
 
-            <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar h-[calc(100vh-250px)]">
+          <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {direktoriList.filter(item => item.name?.toLowerCase().includes(searchPemohon.toLowerCase())).map((item, idx) => {
                 const isActive = activePemohon?.id === item.id;
                 return (
                   <div
                     key={item.id || idx}
-                    onClick={() => setActivePemohon(item)}
-                    className={`cursor-pointer p-4 rounded-xl border transition-all ${
+                    onClick={() => openRegistrationModal(item, 'view')}
+                    className={`group cursor-pointer rounded-xl border p-4 transition-all ${
                       isActive
                         ? 'bg-emerald-950/40 border-emerald-900/50 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                         : 'bg-[#0b1120] border-slate-800 hover:border-slate-700'
@@ -1117,14 +1264,24 @@ export function AdminDashboard() {
                       <span>ID: {item.id || `PIHK-00${idx+1}`}</span>
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Baru saja</span>
                     </div>
+                    <div className="mt-4 flex gap-2 border-t border-slate-800 pt-3">
+                      <Button size="sm" variant="outline" className="flex-1 border-slate-700 text-xs text-slate-200 hover:border-emerald-400/60 hover:bg-emerald-950/40 hover:text-white" onClick={(event) => { event.stopPropagation(); openRegistrationModal(item, 'view'); }}>
+                        <FileCheck className="mr-1.5 h-3.5 w-3.5" /> Detail
+                      </Button>
+                      <Button size="icon" variant="outline" className="h-8 w-8 border-slate-700 text-slate-300 hover:border-sky-400/60 hover:bg-sky-950/40 hover:text-white" aria-label={`Edit ${item.name}`} onClick={(event) => { event.stopPropagation(); openRegistrationModal(item, 'edit'); }}>
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button size="icon" variant="outline" className="h-8 w-8 border-rose-900/60 text-rose-400 hover:bg-rose-950/40" aria-label={`Hapus ${item.name}`} onClick={(event) => { event.stopPropagation(); deleteRegistration(item); }}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
-            </div>
           </div>
 
           {/* Right Panel - Details */}
-          <div className="w-full lg:w-2/3 flex flex-col gap-6">
+          <div className="hidden">
             {activePemohon ? (
               <>
                 {/* Header */}

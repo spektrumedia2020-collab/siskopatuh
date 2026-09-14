@@ -11,9 +11,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // UNIFIED THEME CONFIGURATION
     const variants = {
       default: "theme-primary-bg theme-button-text hover:opacity-90 shadow-lg font-bold border-transparent transition-all",
-      outline: "border-2 !border-[var(--theme-primary)] bg-transparent hover:theme-primary-bg !text-[var(--theme-primary)] hover:!text-[var(--theme-text-button)] transition-all font-bold",
-      ghost: "hover:theme-primary-bg !text-[var(--theme-text-title)] hover:!text-[var(--theme-text-button)] transition-all font-bold",
-      secondary: "bg-black/20 !text-[var(--theme-text-title)] hover:bg-black/40 transition-all font-bold",
+      outline: "border-2 border-[var(--theme-primary)] bg-transparent text-[var(--theme-primary)] hover:bg-[var(--theme-primary)] hover:text-white transition-all font-bold",
+      ghost: "hover:bg-[var(--theme-primary)] text-[var(--theme-text-title)] hover:text-white transition-all font-bold",
+      secondary: "bg-black/20 text-[var(--theme-text-title)] hover:bg-black/40 hover:text-white transition-all font-bold",
       destructive: "bg-rose-600 text-white hover:bg-rose-500 shadow-lg font-bold transition-all",
       link: "!text-[var(--theme-primary)] underline-offset-4 hover:underline font-bold transition-all",
     }
@@ -32,14 +32,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           "inline-flex items-center justify-center rounded-md text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           variants[variant],
           sizes[size],
-          // We strip out hardcoded overrides from className if they conflict, or let them override.
-          // Since the user wants to REMOVE hardcoded button styles, we can actually filter them out from \`className\`!
-          className?.replace(/bg-(blue|emerald|rose|amber|white|slate)-[0-9]{3}(\/[0-9]+)?/g, '')
-                   .replace(/text-(blue|emerald|rose|amber|white|slate)-[0-9]{3}(\/[0-9]+)?/g, '')
-                   .replace(/hover:bg-(blue|emerald|rose|amber|white|slate)-[0-9]{3}(\/[0-9]+)?/g, '')
-                   .replace(/theme-primary-bg/g, '')
-                   .replace(/shadow-lg/g, '')
-                   .replace(/border-transparent/g, '')
+          className
         )}
         {...props}
       />

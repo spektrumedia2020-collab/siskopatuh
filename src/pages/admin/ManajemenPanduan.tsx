@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, Plus, Save, Trash2, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { BookOpen, Plus, Save, Trash2, ChevronDown, ChevronUp, FileText, Search, Eye } from "lucide-react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { defaultSections } from "../../lib/defaultPanduanData";
@@ -8,6 +8,10 @@ export function ManajemenPanduan() {
   const [sections, setSections] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [expandedSections, setExpandedSections] = useState<number[]>([0]);
   const [toastMessage, setToastMessage] = useState<{title: string, desc: string, type: string} | null>(null);
 
   useEffect(() => {
@@ -45,6 +49,8 @@ export function ManajemenPanduan() {
         updatedAt: new Date().toISOString()
       }, { merge: true });
       setToastMessage({ title: "Berhasil", desc: "Data panduan berhasil diupdate.", type: "success" });
+      setIsDirty(false);
+      setLastSavedAt(new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }));
       setTimeout(() => setToastMessage(null), 3000);
     } catch (error) {
       setToastMessage({ title: "Gagal", desc: "Terjadi kesalahan.", type: "error" });
@@ -54,18 +60,26 @@ export function ManajemenPanduan() {
     }
   };
 
+  const markDirty = (nextSections: any[]) => {
+    setSections(nextSections);
+    setIsDirty(true);
+  };
+
   const updateSection = (idx: number, field: string, value: string) => {
     const newSections = [...sections];
     newSections[idx] = { ...newSections[idx], [field]: value };
-    setSections(newSections);
+    markDirty(newSections);
   };
 
   const addSection = () => {
-    setSections([...sections, { title: "BAB BARU", iconName: "BookOpen", description: "", pages: [] }]);
+    const nextSections = [...sections, { title: "BAB BARU", iconName: "BookOpen", description: "", pages: [] }];
+    markDirty(nextSections);
+    setExpandedSections(prev => [...prev, nextSections.length - 1]);
   };
 
   const removeSection = (idx: number) => {
-    setSections(sections.filter((_, i) => i !== idx));
+    if (!window.confirm(`Hapus ${sections[idx]?.title || 'bab ini'}?`)) return;
+    markDirty(sections.filter((_, i) => i !== idx));
   };
 
   const addPage = (secIdx: number) => {
@@ -76,38 +90,53 @@ export function ManajemenPanduan() {
       akses: "",
       langkah: ["Langkah 1"]
     });
-    setSections(newSections);
+    markDirty(newSections);
   };
 
   const updatePage = (secIdx: number, pageIdx: number, field: string, value: any) => {
     const newSections = [...sections];
     newSections[secIdx].pages[pageIdx] = { ...newSections[secIdx].pages[pageIdx], [field]: value };
-    setSections(newSections);
+    markDirty(newSections);
   };
 
   const removePage = (secIdx: number, pageIdx: number) => {
     const newSections = [...sections];
     newSections[secIdx].pages = newSections[secIdx].pages.filter((_, i) => i !== pageIdx);
-    setSections(newSections);
+    markDirty(newSections);
   };
 
   const updateLangkah = (secIdx: number, pageIdx: number, stepIdx: number, value: string) => {
     const newSections = [...sections];
     newSections[secIdx].pages[pageIdx].langkah[stepIdx] = value;
-    setSections(newSections);
+    markDirty(newSections);
   };
 
   const addLangkah = (secIdx: number, pageIdx: number) => {
     const newSections = [...sections];
     newSections[secIdx].pages[pageIdx].langkah.push("Langkah Baru");
-    setSections(newSections);
+    markDirty(newSections);
   };
 
   const removeLangkah = (secIdx: number, pageIdx: number, stepIdx: number) => {
     const newSections = [...sections];
     newSections[secIdx].pages[pageIdx].langkah = newSections[secIdx].pages[pageIdx].langkah.filter((_, i) => i !== stepIdx);
-    setSections(newSections);
+    markDirty(newSections);
   };
+
+  const toggleSection = (idx: number) => {
+    setExpandedSections(prev => prev.includes(idx) ? prev.filter(item => item !== idx) : [...prev, idx]);
+  };
+
+  const resetToDefault = () => {
+    if (!window.confirm('Kembalikan seluruh panduan ke konten default? Perubahan yang belum disimpan akan hilang.')) return;
+    markDirty(defaultSections);
+    setExpandedSections([0]);
+  };
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleSections = sections
+    .map((section, index) => ({ section, index }))
+    .filter(({ section }) => !normalizedQuery || section.title?.toLowerCase().includes(normalizedQuery) || section.description?.toLowerCase().includes(normalizedQuery) || section.pages?.some((page: any) => page.name?.toLowerCase().includes(normalizedQuery)));
 
   if (loading) return <div className="text-slate-400">Memuat data panduan...</div>;
 
@@ -120,14 +149,17 @@ export function ManajemenPanduan() {
         </div>
       )}
 
-      <div className="mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="sticky top-0 z-20 -mx-3 mb-6 flex flex-col gap-4 border-b border-slate-800 bg-slate-950/95 px-3 py-4 backdrop-blur sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight theme-title">Manajemen Panduan Aplikasi</h1>
           <p className="text-sm text-slate-400">Atur dan update fitur panduan ("Baca Panduan") yang akan dibaca oleh publik secara real-time.</p>
+          <p className={`mt-2 text-xs font-semibold ${isDirty ? 'text-amber-300' : 'text-emerald-300'}`}>
+            {isDirty ? 'Ada perubahan yang belum disimpan' : lastSavedAt ? `Tersimpan pukul ${lastSavedAt}` : 'Semua perubahan tersimpan'}
+          </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
           <button 
-            onClick={() => setSections(defaultSections)}
+            onClick={resetToDefault}
             className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-slate-700"
           >
             Reset ke Default
@@ -143,10 +175,25 @@ export function ManajemenPanduan() {
         </div>
       </div>
 
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row">
+        <label className="relative min-w-0 flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Cari bab atau fitur..." className="h-11 w-full rounded-lg border border-slate-700 bg-slate-900 pl-10 pr-3 text-sm text-white outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20" />
+        </label>
+        <button onClick={addSection} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-dashed border-slate-600 px-4 text-sm font-bold text-slate-300 transition-colors hover:border-emerald-400 hover:bg-emerald-950/30 hover:text-emerald-200">
+          <Plus className="h-4 w-4" /> Tambah Bab
+        </button>
+      </div>
+
       <div className="space-y-6">
-        {sections.map((section, sIdx) => (
-          <div key={sIdx} className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <div className="flex justify-between items-start mb-4">
+        {visibleSections.map(({ section, index: sIdx }) => {
+          const isExpanded = expandedSections.includes(sIdx) || Boolean(normalizedQuery);
+          return (
+          <div key={sIdx} className="rounded-xl border border-slate-800 bg-slate-900 p-4 sm:p-5">
+            <div className="mb-4 flex items-start gap-3">
+              <button type="button" onClick={() => toggleSection(sIdx)} className="mt-1 rounded-md p-1 text-emerald-300 hover:bg-emerald-950/50" aria-label={isExpanded ? 'Tutup bab' : 'Buka bab'}>
+                {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+              </button>
               <div className="flex-1 mr-4 space-y-3">
                 <input 
                   value={section.title}
@@ -161,12 +208,12 @@ export function ManajemenPanduan() {
                   placeholder="Deskripsi singkat bab..."
                 />
               </div>
-              <button onClick={() => removeSection(sIdx)} className="p-2 text-red-400 hover:bg-red-400/10 rounded-lg">
+              <button onClick={() => removeSection(sIdx)} className="rounded-lg p-2 text-red-400 hover:bg-red-400/10" aria-label={`Hapus ${section.title}`}>
                 <Trash2 className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="pl-6 space-y-4 border-l-2 border-slate-800 mt-6">
+            {isExpanded && <div className="mt-6 space-y-4 border-l-2 border-slate-800 pl-6">
               <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Daftar Halaman/Fitur</h3>
               
               {section.pages.map((page: any, pIdx: number) => (
@@ -235,9 +282,11 @@ export function ManajemenPanduan() {
               >
                 <Plus className="w-4 h-4" /> Tambah Fitur / Halaman di Bab Ini
               </button>
-            </div>
+            </div>}
           </div>
-        ))}
+          );
+        })}
+        {visibleSections.length === 0 && <div className="rounded-xl border border-dashed border-slate-700 p-10 text-center text-sm text-slate-400">Tidak ada bab atau fitur yang cocok.</div>}
         
         <button 
           onClick={addSection}

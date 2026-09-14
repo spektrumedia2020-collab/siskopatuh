@@ -1,3 +1,17 @@
+select {
+	color-scheme: dark;
+}
+
+select option {
+	background-color: #0b1120;
+	color: #f8fafc;
+}
+
+select option:checked,
+select option:hover {
+	background-color: #065f46;
+	color: #ffffff;
+}
 @import "tailwindcss";
 
 .public-landing .theme-card,

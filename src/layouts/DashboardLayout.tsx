@@ -211,7 +211,7 @@ export function DashboardLayout({ role }: { role: 'jemaah' | 'penyelenggara' | '
                     className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 ${
                       isActive
                         ? "bg-gradient-to-r from-emerald-500 to-sky-500 border-emerald-300/40 text-slate-950 shadow-lg shadow-emerald-950/25 ring-1 ring-emerald-300/30"
-                        : "bg-slate-950/20 theme-body border-transparent hover:bg-emerald-400/10 hover:border-emerald-300/15 hover:theme-title"
+                        : "bg-slate-950/20 theme-body border-transparent hover:bg-emerald-400/10 hover:border-emerald-300/15 hover:text-white"
                     }`}
                   >
                     <item.icon className="h-4 w-4" />

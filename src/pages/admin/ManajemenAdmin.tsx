@@ -27,6 +27,9 @@ export function ManajemenAdmin() {
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [logs, setLogs] = useState<AdminLog[]>([]);
   const [filterLog, setFilterLog] = useState<'harian' | 'mingguan' | 'bulanan'>('harian');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState('Semua Role');
+  const [isFormOpen, setIsFormOpen] = useState(false);
   
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState("");
@@ -124,6 +127,12 @@ export function ManajemenAdmin() {
     setFormName(admin.name);
     setFormNip(admin.nip);
     setFormRole(admin.role);
+    setIsFormOpen(true);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    setIsFormOpen(true);
   };
 
   const resetForm = () => {
@@ -132,7 +141,15 @@ export function ManajemenAdmin() {
     setFormName("");
     setFormNip("");
     setFormRole("General Admin");
+    setIsFormOpen(false);
   };
+
+  const filteredAdmins = admins.filter(admin => {
+    const query = searchQuery.toLowerCase().trim();
+    const matchesSearch = !query || admin.name.toLowerCase().includes(query) || admin.nip.toLowerCase().includes(query);
+    const matchesRole = roleFilter === 'Semua Role' || admin.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
 
   const exportPDF = () => {
     const doc = new jsPDF();
@@ -185,12 +202,40 @@ export function ManajemenAdmin() {
           </h1>
           <p className="text-sm text-white/50 mt-1">Area khusus Super Admin untuk mengatur akses dan memantau kegiatan log General Admin.</p>
         </div>
+        <Button onClick={handleAdd} className="w-full sm:w-auto"><UserPlus className="mr-2 h-4 w-4" /> Tambah Admin</Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          ['Total Admin', admins.length, 'text-white'],
+          ['Super Admin', admins.filter(admin => admin.role === 'Super Admin').length, 'text-amber-300'],
+          ['General Admin', admins.filter(admin => admin.role === 'General Admin').length, 'text-emerald-300'],
+          ['Aktif', admins.filter(admin => (admin.status || 'Aktif') === 'Aktif').length, 'text-sky-300']
+        ].map(([label, value, color]) => (
+          <div key={String(label)} className="rounded-xl border border-white/10 bg-black/20 p-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-white/50">{label}</p>
+            <p className={`mt-2 text-2xl font-black ${color}`}>{value}</p>
+          </div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Kolom Kiri: Form & Daftar Admin */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="theme-card border-white/10">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <label className="relative min-w-0 flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+              <input value={searchQuery} onChange={event => setSearchQuery(event.target.value)} placeholder="Cari nama atau NIP..." className="h-10 w-full rounded-lg border border-white/10 bg-black/20 pl-10 pr-3 text-sm text-white outline-none focus:border-emerald-400" />
+            </label>
+            <select value={roleFilter} onChange={event => setRoleFilter(event.target.value)} className="h-10 rounded-lg border border-white/10 bg-slate-900 px-3 text-sm text-white outline-none focus:border-emerald-400">
+              <option>Semua Role</option>
+              <option>Super Admin</option>
+              <option>General Admin</option>
+            </select>
+          </div>
+
+          {isFormOpen && <div className="fixed inset-0 z-[70] flex items-end justify-center bg-slate-950/80 p-3 backdrop-blur-sm sm:items-center sm:p-6">
+          <Card className="theme-card max-h-[90vh] w-full max-w-xl overflow-y-auto border-white/10">
             <CardHeader className="border-b border-white/5 pb-4">
               <CardTitle className="text-sm font-bold theme-title flex items-center gap-2">
                 <UserPlus className="w-4 h-4 theme-primary-text" /> 
@@ -217,9 +262,7 @@ export function ManajemenAdmin() {
                   </select>
                 </div>
                 <div className="flex gap-2 justify-end pt-2">
-                  {isEditing && (
-                    <Button type="button" variant="outline" onClick={resetForm} className="border-white/20 text-white/70 hover:bg-white/10">Batal</Button>
-                  )}
+                  <Button type="button" variant="outline" onClick={resetForm} className="border-white/20 text-white/70 hover:bg-white/10">Tutup</Button>
                   <Button type="submit" className=" hover:opacity-90">
                     <Save className="w-4 h-4 mr-2" /> {isEditing ? "Simpan Perubahan" : "Simpan Admin"}
                   </Button>
@@ -227,6 +270,7 @@ export function ManajemenAdmin() {
               </form>
             </CardContent>
           </Card>
+          </div>}
 
           <Card className="theme-card border-white/10">
             <CardHeader className="border-b border-white/5 pb-4">
@@ -247,10 +291,10 @@ export function ManajemenAdmin() {
                     </tr>
                   </thead>
                   <tbody>
-                    {admins.length === 0 ? (
+                    {filteredAdmins.length === 0 ? (
                       <tr><td colSpan={4} className="p-8 text-center text-sm text-white/50">Belum ada data admin</td></tr>
                     ) : (
-                      admins.map(admin => (
+                      filteredAdmins.map(admin => (
                         <tr key={admin.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                           <td className="p-4">
                             <p className="text-sm font-bold theme-title">{admin.name}</p>
